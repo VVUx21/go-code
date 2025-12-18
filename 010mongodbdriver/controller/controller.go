@@ -2,17 +2,20 @@ package controller
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/VVUx21/mongoapi/model"
+	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const connectionString = "mongodb://localhost:27017/"
+const connectionString = "mongodb://localhost:27017"
 const dbName = "mydatabase"
 const collectionName = "mycollection"
 
@@ -74,4 +77,83 @@ func DeleteAllRecords() (*mongo.DeleteResult, error) {
 	}
 	fmt.Println("Deleted all records ", deleteResult.DeletedCount)
 	return deleteResult, err
+}
+
+//get all records from mongodb
+func GetAllRecords() ([]primitive.M, error) {
+	var movies []primitive.M
+	cursor, err := collection.Find(context.Background(), bson.D{{}})
+	if err != nil {
+		log.Fatal(err)
+	}
+	for cursor.Next(context.Background()) {
+		var movie bson.M
+		err := cursor.Decode(&movie)
+		if err != nil {
+			log.Fatal(err)
+		}
+		movies = append(movies, movie)
+	}
+	defer cursor.Close(context.Background())	
+	return movies, err
+}
+
+//ACtual controller - file
+
+func GetMyAllMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	allMovies, err := GetAllRecords()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(allMovies)
+}
+
+func CreateMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	var movie model.Netflix
+	_ = json.NewDecoder(r.Body).Decode(&movie)
+	insertResult, err := InsertOneRecord(movie)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(insertResult)
+}
+
+func MarkAsWatched(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT")
+	movieID := mux.Vars(r)["id"]
+	updateResult, err := UpdateOneRecord(movieID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(updateResult)
+}
+
+func DeleteAMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+	movieID := mux.Vars(r)["id"]
+	deleteResult, err := DeleteOneRecord(movieID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(deleteResult)
+}
+
+func DeleteAllMovies(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+	deleteResult, err := DeleteAllRecords()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(deleteResult)
 }
