@@ -1,4 +1,4 @@
-# Build a Simple Full-stack App with Golang in 2 Hours!
+# Built a Simple Full-stack App with Golang
 
 This repository contains the code for the ["Build a Simple Full-stack App with Golang in 2 Hours!"](https://youtu.be/bem0bdDBs8A) tutorial, showcasing how to build a social interaction app called **GoCards** using the **GOAT Stack** (Go, a-h/templ, Alpine.js, Tailwind CSS) and **PocketBase** as a Backend-as-a-Service (BaaS). Users can sign up, create cards, like cards, and view/read cards created by others. This project is designed for learning and rapid prototyping, *not* for production-ready applications.
 
@@ -18,11 +18,6 @@ This project uses PocketBase v0.22.23. As PocketBase is still pre-1.0 and underg
 ```go
 require github.com/pocketbase/pocketbase v0.22.23
 ```
-
-**Important Disclaimer:**
-
-This project uses a simplified architecture for educational purposes and rapid prototyping. It is *not* suitable for large, complex, or production-ready applications. For those, you'll need a more robust architecture, potentially involving custom backend logic, more sophisticated data modeling, and considerations for scaling and security that go beyond the scope of this tutorial.
-
 ## Getting Started
 
 ### Prerequisites
@@ -162,17 +157,3 @@ make sync
 * `make test` - Run the test suite
 * `make source` - Load environment variables from .env
 * `make build` - Create a production build
-
-## Related Resources
-
-* [Tutorial Video Part 1](https://youtu.be/bem0bdDBs8A)
-* More videos coming soon!
-
-## Connect With Me
-
-* Telegram Channel: [AliTahseenDev](https://t.me/+-aFYIKA-ZGU4M2Uy)
-* Website: [MoreThanCoder](https://morethancoder.com)
-
-## License
-
-[MIT License](LICENSE)

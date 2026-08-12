@@ -23,7 +23,7 @@ go.work.sum
 
 # env file
 .env
-
+./README.md
 
 # Dependencies
 node_modules/
